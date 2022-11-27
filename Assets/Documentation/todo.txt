@@ -1,0 +1,13 @@
+1. Camera follow (CHECK)
+2. Walk backwards with new animation
+3. Add Punching 
+	- NEED  to get reid fo the fighting state from
+	  state machine and player script (DONE)
+	- Make it a "additional" setting for each state to affect settings. (DONE FOR PUNCHING)
+	- Need to make it a full animation cycle on press instead of hold
+4. Add enemy
+5. Get gravity working correctly (DONE)
+5b. Create Zero Gravity
+6. Equip a Gun and fire
+7. Float animation for character 
+8. 
