@@ -29,6 +29,11 @@ public class Player : MonoBehaviour
     bool isStepping = false;
     string directionFace = "right";
 
+    //Inventory
+    public int currentWeaponSelector = 0;
+    public string currentWeapon = "unarmed";
+    public string[] inventory = { "unarmed", "rifle" };
+
     // Gravity
     bool inNormalGravity = true;
     bool inReverseGravity = false;
@@ -103,8 +108,10 @@ public class Player : MonoBehaviour
             isStepping = false;
         }
 
-        getJumpValue();
+        checkIfGrounded();
     }
+
+    //Make item inventory function
 
     public void SetGravity(string gravityType) 
     {
@@ -131,7 +138,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void getJumpValue() {
+    private void checkIfGrounded() {
 
         if (isJumping && !hasJumped)
         {
@@ -205,6 +212,7 @@ public class Player : MonoBehaviour
                 {
                     playerAnimations.changeAnimationState("Running");
                 }
+              
 
                 if (!facingRightDirection)
                 {
@@ -220,9 +228,12 @@ public class Player : MonoBehaviour
                 {
                     playerAnimations.changeAnimationState("Jumping");
                 }
-                else
+                else if (Input.GetKey("d") == true)
                 {
                     playerAnimations.changeAnimationState("Running");
+                }
+                else {
+                    playerAnimations.changeAnimationState("idle");
                 }
 
                 if (facingRightDirection)
@@ -244,16 +255,23 @@ public class Player : MonoBehaviour
                     playerAnimations.changeAnimationState("Idle");
                 }
 
+
                 break;
 ;            case "idle":
                 moveInput = new Vector3(0, 0, 0);
-                playerAnimations.changeAnimationState("Idle");
+          
+                if (!inReverseGravity) {
+                    playerAnimations.changeAnimationState("Idle");
+                }
+               
                 break;
              default:
                 moveInput = new Vector3(0, 0, 0);
-                playerAnimations.changeAnimationState("Idle");
+                //if (!inReverseGravity)
+                //{
+                    //playerAnimations.changeAnimationState("Idle");
+                //}
                 break;
-
         }
 
         //Gravity settings
@@ -261,12 +279,14 @@ public class Player : MonoBehaviour
         {
             moveInput = new Vector3(moveInput.x, 1.0f, moveInput.z);
             rigidbodyComponent.useGravity = false;
+            playerAnimations.changeAnimationState("Floating");
         }
 
         if (inZeroGravity) 
         {
             moveInput = new Vector3(moveInput.x, 0.01f, moveInput.z);
             rigidbodyComponent.useGravity = false;
+            playerAnimations.changeAnimationState("Floating");
         }
 
         if (inNormalGravity) 
