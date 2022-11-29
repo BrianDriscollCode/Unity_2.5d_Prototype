@@ -5,21 +5,10 @@ using UnityEngine;
 
 public class StateMachinePlayer2 : MonoBehaviour
 {
-    string CurrentState;
-    string[] StateTypes = {
-            "isJumping",
-            "isFloating",
-            "isMoving",
-            "isCrouching",
-            "isIdle"
-    };
+    string[]? CurrentState = { "isIdle", null };
+    CharacterStateTypes StateTypes = new CharacterStateTypes();
 
-    void Start()
-    {
-        CurrentState = "isIdle";
-    }
-
-    public string CheckState(PassToStateMachine CharacterData)
+    public string[] CheckState(PassToStateMachine CharacterData)
 
     {
         string type = CharacterData.InputType;
@@ -29,32 +18,47 @@ public class StateMachinePlayer2 : MonoBehaviour
         {
             switch (value)
             {
-                case "wd":
-                    Debug.Log(StateTypes[0] + " " + StateTypes[2]); //isJumping //isMoving
+                //right
+                case "wd": 
+                    CurrentState[0] = StateTypes.isJumping; 
+                    CurrentState[1] = StateTypes.isMoving; 
                     break;
+                //left
                 case "wa":
-                    Debug.Log(StateTypes[0] + " " + StateTypes[2]); //isJumping //isMoving
+                    CurrentState[0] = StateTypes.isJumping; 
+                    CurrentState[1] = StateTypes.isMoving;
                     break;
                 case "w":
-                    Debug.Log(StateTypes[0]); //isJumping
+                    CurrentState[0] = StateTypes.isJumping;
+                    CurrentState[1] = null; 
                     break;
-                case "sa":
-                    Debug.Log(StateTypes[3] + " " + StateTypes[2]); //isCrouching //isMoving
-                    break;
+                //right
                 case "sd":
-                    Debug.Log(StateTypes[3] + " " + StateTypes[2]); //isCrouching //isMoving
+                    CurrentState[0] = StateTypes.isCrouching;
+                    CurrentState[1] = StateTypes.isMoving;
+                    break;
+                //left
+                case "sa":
+                    CurrentState[0] = StateTypes.isCrouching;
+                    CurrentState[1] = StateTypes.isMoving;
                     break;
                 case "s":
-                    Debug.Log(StateTypes[3]); //isCrouching
+                    CurrentState[0] = StateTypes.isCrouching; 
+                    CurrentState[1] = null;
                     break;
-                case "a":
-                    Debug.Log(StateTypes[2]); //isMoving
-                    break;
+                //right
                 case "d":
-                    Debug.Log(StateTypes[2]); //isMoving
+                    CurrentState[0] = StateTypes.isMoving;
+                    CurrentState[1] = null;
+                    break;
+                //left
+                case "a":
+                    CurrentState[0] = StateTypes.isMoving;
+                    CurrentState[1] = null;
                     break;
                 default:
-                    Debug.Log(StateTypes[4] + " - Still unsure to handle default case this way");
+                    CurrentState[0] = StateTypes.isIdle;
+                    CurrentState[1] = null;
                     break;
             }
         }

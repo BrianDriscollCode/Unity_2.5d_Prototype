@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
 
         currentState = externalStateMachine.getCurrentState();
         playerAction = null;
-        Debug.Log(jumpInput);
+        //Debug.Log(jumpInput);
 
         SetGravity("normal");
     }
@@ -117,21 +117,21 @@ public class Player : MonoBehaviour
     {
         if (gravityType == "reverseGravity")
         {
-            Debug.Log("***Reverse Gravity set***");
+            //Debug.Log("***Reverse Gravity set***");
             inNormalGravity = false;
             inReverseGravity = true;
             inZeroGravity = false;
         }
         else if (gravityType == "zeroGravity") 
         {
-            Debug.Log("***Zero Gravity set***");
+            //Debug.Log("***Zero Gravity set***");
             inNormalGravity = false;
             inReverseGravity = false;
             inZeroGravity = true;
         }
         else
         {
-            Debug.Log("***Normal Gravity set***");
+            //Debug.Log("***Normal Gravity set***");
             inNormalGravity = true;
             inReverseGravity = false;
             inZeroGravity = false;
@@ -166,7 +166,7 @@ public class Player : MonoBehaviour
         switch (state)
         {
             case "punching":
-                Debug.Log(playerAnimations);
+                //Debug.Log(playerAnimations);
                 playerAnimations.changeAnimationState("PunchingStraight");
                 moveInput = new Vector3(0, 0, 0);
                 break;
@@ -317,7 +317,7 @@ public class Player : MonoBehaviour
         if (punch == true)
         {
             playerAction = "punching";
-            Debug.Log("setting player action to fighting");
+            //Debug.Log("setting player action to fighting");
         }
         else if (crouch == true)
         {

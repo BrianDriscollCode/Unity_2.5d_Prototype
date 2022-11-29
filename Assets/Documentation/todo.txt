@@ -11,3 +11,24 @@
 6. Equip a Gun and fire
 7. Float animation for character 
 8. 
+-----
+REBUILDING CHARACTER CONTROLLER
+
+1. Get Clean Input (CHECK)
+2. Get Clean State from Pure Input (CHECK)
+3. Build Movement from state (CHECK)
+4. Create logic for animations from state 
+	A) HOW to let 'punch' play through 
+	B) HOW to let 'jump' play through (CHECK)
+	C) Everything else should interrupt
+5. Program Camera following logic (connect existing camera)
+6. Reinstantiate the Gravity mechanics
+	A) Float
+	B) Create the float animation mechanics
+	C) Return to normal
+5. Get a weapon equipped (gun and sword and gravity beam)
+	A) Animations
+	B) Feel and use
+6. Get Inventory to switch and equip weapons. 
+-----
+7. Add Enemy
