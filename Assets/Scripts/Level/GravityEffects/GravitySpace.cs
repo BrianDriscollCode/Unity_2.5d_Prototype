@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GravitySpace : MonoBehaviour
 {
-    private bool isInBox;
-    [SerializeField] public Player playerObject;
+
+    public PhysicsAdjustments PhysicsAdjustments;
     // Start is called before the first frame update
     void Start()
     {
-        isInBox = false;
+        PhysicsAdjustments = GameObject.Find("Level3").GetComponent<PhysicsAdjustments>();
     }
 
     // Update is called once per frame
@@ -18,13 +18,11 @@ public class GravitySpace : MonoBehaviour
 
     }
 
-    void OnTriggerStay(Collider player)
+    void OnTriggerStay(Collider player2)
     {
-        //Physics.gravity = new Vector3(0, -9.81f, 0);
+        
+        //Debug.Log("HIGH VOLTAGE");
+        PhysicsAdjustments.SetGravity("NormalGravity");
 
-        Debug.Log("*GravitySpace Script Triggered");
-
-        Player playerClass = playerObject.GetComponent<Player>();
-        playerClass.SetGravity("normalGravity");
     }
 }

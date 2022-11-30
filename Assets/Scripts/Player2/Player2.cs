@@ -10,11 +10,14 @@ namespace PlayerDataPackages
     {
         public string InitialState;
         public string AdditionalState;
+        public string AttackingState;
 
-        public void SetState(string FirstState, string? SecondState)
+        public void SetState(string FirstState, string? SecondState, string ThirdState)
         {
             InitialState = FirstState;
             AdditionalState = SecondState;
+            AttackingState = ThirdState;
+            
         }
     }
     public class CharacterStateTypes
@@ -24,6 +27,7 @@ namespace PlayerDataPackages
         public string isMoving = "isMoving";
         public string isCrouching = "isCrouching";
         public string isIdle = "isIdle";
+        public string isAttacking = "isAttacking";
     }
     public class PassToStateMachine
     {
@@ -54,7 +58,7 @@ public class Player2 : MonoBehaviour
 
     //State { FirstState, SecondState }
     public PlayerState PlayerState = new PlayerState();
-    public string[] TempPlayerState = { "Idle", null };
+    public string[] TempPlayerState = { "Idle", null, null };
     //Player Variables
     public string PlayerDirection = "Right";
     public bool HasJumped = false;
@@ -62,17 +66,18 @@ public class Player2 : MonoBehaviour
     //Current Input
     public string? PlayerCurrentInput = null;
 
-    void Start()
+    private void Awake()
     {
-    
         StateMachine = GetComponent<StateMachinePlayer2>();
         Movement = GetComponent<MovementPlayer2>();
         AnimationPlayer = GetComponent<AnimationPlayer2>();
         Inventory = GetComponent<InventoryPlayer2>();
         Raycast = GetComponent<Raycast2>();
-
-        PlayerState.SetState(TempPlayerState[0], TempPlayerState[1]);
-        AnimationPlayer.SetAnimationState("Idle", null, "Right", false);
+    }
+    void Start()
+    {
+        PlayerState.SetState(TempPlayerState[0], TempPlayerState[1], TempPlayerState[2]);
+        //AnimationPlayer.SetAnimationState("Idle", null, "Right", false);
     }
 
     private void Update()
@@ -86,7 +91,7 @@ public class Player2 : MonoBehaviour
         TempPlayerState = StateMachine.CheckState(DirectInput);
         
         //Set Player2 Script State (this script)
-        PlayerState.SetState(TempPlayerState[0], TempPlayerState[1]);
+        PlayerState.SetState(TempPlayerState[0], TempPlayerState[1], TempPlayerState[2]);
         //Debug.Log(PlayerState.InitialState + " " + PlayerState.AdditionalState + " -Current player state");
 
         //Inventory management here???
@@ -96,7 +101,7 @@ public class Player2 : MonoBehaviour
         {
             HasJumped = false;
         }
-        AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped);
+        AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped, PlayerState.AttackingState);
         //Debug.Log("******************" + PlayerState.AdditionalState);
 
         //Debug.Log("Camera here: " + Camera.transform );
@@ -112,6 +117,7 @@ public class Player2 : MonoBehaviour
 
         //Finish Writing the direction logic
         Movement.MovePlayer(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped);
+
         //Debug.Log(HasJumped + " -HasJumped equals");
 
         
@@ -205,7 +211,11 @@ public class Player2 : MonoBehaviour
         else if (Input.GetKey("space")) 
         {
             UserInput = "space";
-        } 
+        }
+        else if (Input.GetKey("q"))
+        {
+            UserInput = "q";
+        }
         else
         {
             UserInput = null;

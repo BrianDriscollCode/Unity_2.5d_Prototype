@@ -9,12 +9,14 @@ public class AnimationPlayer2 : MonoBehaviour
     public Raycast2 Raycast;
     string CurrentState;
     string CurrentAdditionalState;
+    bool InAttackState;
     Rigidbody Rigidbody;
     string PlayerDirection;
     void Start()
     {
         Animator = GetComponent<Animator>();
         JumpPreviousState = false;
+        InAttackState = false;
         Raycast = GetComponent<Raycast2>();
         CurrentState = "Idle";
         Animator.CrossFade(CurrentState, 0.05f);
@@ -22,32 +24,59 @@ public class AnimationPlayer2 : MonoBehaviour
         PlayerDirection = "Right";
     }
 
-    public void SetAnimationState(string InitialState, string AdditionalState, string Direction, bool HasJumped)
+    public void SetAnimationState(string InitialState, string AdditionalState, string Direction, bool HasJumped, string isAttacking)
     {
-
-        if (PlayerDirection != Direction) 
+        Debug.Log(InitialState + " -InitialState");
+        if (PlayerDirection != Direction)
         {
             transform.Rotate(0, 180, 0);
             PlayerDirection = Direction;
-        } 
+        }
 
-       
+
         if (CurrentState == InitialState && CurrentAdditionalState == AdditionalState && JumpPreviousState == HasJumped)
         {
             return;
         }
 
 
+        if (isAttacking == "isAttacking")
+        {
+            InAttackState = true;
+        }
+
+        if (isAttacking == "isNeutral")
+        {
+            Debug.Log("isNEUTRAL NOW");
+            InAttackState = false;
+        }
+
+        if (InAttackState && InitialState == "isMoving")
+        {
+            Animator.CrossFade("PistolRun", 0.2f);
+        }
+        else if (InitialState == "isIdle")
+        {
+            Animator.CrossFade("PistolIdle", 0.2f);
+        }
+        else if (InAttackState)
+        {
+            Animator.CrossFade("PistolIdle", 0.1f);
+        }
+
+        if (InAttackState)
+        {
+            return;
+        }
+
         if (HasJumped)
         {
-            //Debug.Log("I AM JUMPING *************");
             Animator.CrossFade("Jumping", 0.05f);
 
             if (Raycast.IsGrounded())
             {
                 Animator.CrossFade("Idle", 0.2f);
             }
-
         }
         else if (InitialState == "isMoving" && AdditionalState == null && Direction == "Right")
         {

@@ -4,13 +4,10 @@ using UnityEngine;
 
 public class ReverseGravitySpace : MonoBehaviour
 {
-
-    private bool isInBox;
-    [SerializeField] public Player playerObject;
-    // Start is called before the first frame update
+    public PhysicsAdjustments PhysicsAdjustments;
     void Start()
     {
-        isInBox = false;
+        PhysicsAdjustments = GameObject.Find("Level3").GetComponent<PhysicsAdjustments>();
     }
 
     // Update is called once per frame
@@ -19,11 +16,11 @@ public class ReverseGravitySpace : MonoBehaviour
         
     }
 
-    void OnTriggerStay(Collider player) {
-        Debug.Log("*ReverseGravitySpace Script Triggered");
-        //Physics.gravity = new Vector3(0, 0.3f, 0);
-        
-        Player playerClass = playerObject.GetComponent<Player>();    
-        playerClass.SetGravity("reverseGravity");
+    void OnTriggerStay(Collider player2) {
+
+        //***** CALL PHYSICS ADJUSTMENT AND SET GRAVITY
+        ///Debug.Log("HIGH VOLTAGE");
+        PhysicsAdjustments.SetGravity("ReverseGravity");
+
     }
 }
