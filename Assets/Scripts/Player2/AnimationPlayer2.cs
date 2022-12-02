@@ -11,13 +11,11 @@ public class AnimationPlayer2 : MonoBehaviour
     string CurrentAdditionalState;
     string CurrentAttackingState;
     bool InAttackState;
-    Rigidbody Rigidbody;
     string PlayerDirection;
     void Start()
     {
         Animator = GetComponent<Animator>();
         Raycast = GetComponent<Raycast2>();
-        Rigidbody = GetComponent<Rigidbody>();
         JumpPreviousState = false;
         InAttackState = false;
         CurrentState = "Idle";

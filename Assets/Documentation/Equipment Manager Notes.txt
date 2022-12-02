@@ -22,4 +22,9 @@ PROGRESS:
 3. Now adding the input via TrackUserInput. 
 	A - How am I suppose to Equip the weapon without calling it repeatedly AND
 	    should I be placing this in the trackInput area? Seems I am now adding
-	    extra complexity where it should only track input.
+	    extra complexity where it should only track input. (SOLVED)
+4. Solved the update() instantiation of the bullet by using Input.GetKeyDown(); 
+5. Errors to solve: 
+	(A) Area effects on bullets effect character. Either change collide setting on bullet or parent/script model. 
+	    One is easier and the other is more scalable and bug free. 
+	

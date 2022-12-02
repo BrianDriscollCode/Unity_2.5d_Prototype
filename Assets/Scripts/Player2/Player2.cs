@@ -56,6 +56,7 @@ public class Player2 : MonoBehaviour
     public InventoryPlayer2 Inventory;
     public Raycast2 Raycast;
     public EquipmentManager EquipmentManager;
+    public Weapons Weapons;
 
     //State { InitialState, AdditionalState, AttackingState }
     public PlayerDataPackages.PlayerState PlayerState; //Refer to namespace for "PlayerDataPackages" (This file up top)
@@ -76,6 +77,7 @@ public class Player2 : MonoBehaviour
         Inventory = GetComponent<InventoryPlayer2>();
         Raycast = GetComponent<Raycast2>();
         EquipmentManager = GetComponent<EquipmentManager>();
+        Weapons = GetComponent<Weapons>();
 
     }
     void Start()
@@ -114,6 +116,12 @@ public class Player2 : MonoBehaviour
         //    HasJumped, 
         //    "Knife"
         //);
+        
+        if (Input.GetKeyDown("space"))
+        {
+            Weapons.ShootPistol(transform.position);
+        }
+        
 
         //Checking if player is grounded to refine jump state before passing all the player states to ***animation player***
         if (Raycast.IsGrounded())
