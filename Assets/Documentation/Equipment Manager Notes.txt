@@ -1,0 +1,25 @@
+1. InAttackState decides whether equipped.
+2. What weapon decides which weapon to equip.
+3. And weapon-type affects the latter animations. 
+	
+	**Something like this held within animationPlayer attackstack logic
+		If (sword) then animate this
+		else if (gun) animate this
+
+STEPS: 
+
+Plan - have two equipment pieces. A Gun on hip and a Gun in hand. Make opaque that which is true.
+1. Place second weapon
+2. Figure out the opague logic and toggle
+3. Use state to toggle
+
+** CHARACTER STOPS IDLING IN GUN IDLE
+
+PROGRESS:
+
+1. Made a function in Equipment Manager
+2. Figured out a real jenky way to get the rotation after attack state
+3. Now adding the input via TrackUserInput. 
+	A - How am I suppose to Equip the weapon without calling it repeatedly AND
+	    should I be placing this in the trackInput area? Seems I am now adding
+	    extra complexity where it should only track input.

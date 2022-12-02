@@ -9,65 +9,88 @@ public class AnimationPlayer2 : MonoBehaviour
     public Raycast2 Raycast;
     string CurrentState;
     string CurrentAdditionalState;
+    string CurrentAttackingState;
     bool InAttackState;
     Rigidbody Rigidbody;
     string PlayerDirection;
     void Start()
     {
         Animator = GetComponent<Animator>();
+        Raycast = GetComponent<Raycast2>();
+        Rigidbody = GetComponent<Rigidbody>();
         JumpPreviousState = false;
         InAttackState = false;
-        Raycast = GetComponent<Raycast2>();
         CurrentState = "Idle";
         Animator.CrossFade(CurrentState, 0.05f);
-        Rigidbody = GetComponent<Rigidbody>();
         PlayerDirection = "Right";
     }
 
+    //** FIX ORDER AND THEN ALSO FIX ORDER FOR Player2 function calls for both animation and movement script
     public void SetAnimationState(string InitialState, string AdditionalState, string Direction, bool HasJumped, string isAttacking)
     {
-        Debug.Log(InitialState + " -InitialState");
+        //Debug.Log("Initial State:" + InitialState + " || " + "Additional State:" + AdditionalState + " || " + "Direction:" + Direction + " || " + "HasJumped:" + HasJumped + " || " + "isAttacking State:" + isAttacking);
+        
         if (PlayerDirection != Direction)
         {
             transform.Rotate(0, 180, 0);
             PlayerDirection = Direction;
         }
 
-
-        if (CurrentState == InitialState && CurrentAdditionalState == AdditionalState && JumpPreviousState == HasJumped)
+        //Don't change animations if ALL states match ALL previous states
+        if (
+            CurrentState == InitialState
+            && CurrentAdditionalState == AdditionalState
+            && JumpPreviousState == HasJumped
+            && CurrentAttackingState == isAttacking
+           )
         {
+            //Debug.Log("***SAME STATE***");
             return;
         }
 
 
+        //Initiating Attack Stance
         if (isAttacking == "isAttacking")
         {
             InAttackState = true;
         }
 
+        //Deactivating Attack Stanceddd
         if (isAttacking == "isNeutral")
         {
-            Debug.Log("isNEUTRAL NOW");
             InAttackState = false;
         }
 
-        if (InAttackState && InitialState == "isMoving")
-        {
-            Animator.CrossFade("PistolRun", 0.2f);
-        }
-        else if (InitialState == "isIdle")
-        {
-            Animator.CrossFade("PistolIdle", 0.2f);
-        }
-        else if (InAttackState)
-        {
-            Animator.CrossFade("PistolIdle", 0.1f);
-        }
+        //Debug.Log(InitialState + "Initial State");
 
+        //***Attacking Stance Animations
+        if (InAttackState == true && InitialState == "isIdle" && AdditionalState == null && HasJumped == false)
+        {
+            //Debug.Log("***Idle Pistol***");
+            Animator.CrossFade("PistolIdle", 0.02f);
+        }
+        else if (InAttackState == true && InitialState == "isMoving" && AdditionalState == null && HasJumped == false)
+        {
+           
+            //Debug.Log("***Run Pistol***");
+            Animator.CrossFade("PistolRun", 0.02f);
+        }
+        
+
+
+        //IF IN ATTACK STATE NEVER go beyond this point
         if (InAttackState)
         {
+
+            CurrentState = InitialState;
+            CurrentAdditionalState = AdditionalState;
+            JumpPreviousState = HasJumped;
+            CurrentAttackingState = isAttacking;
+
             return;
         }
+
+        //***Normal Stance Animations
 
         if (HasJumped)
         {
@@ -110,6 +133,7 @@ public class AnimationPlayer2 : MonoBehaviour
         CurrentState = InitialState;
         CurrentAdditionalState = AdditionalState;
         JumpPreviousState = HasJumped;
+        CurrentAttackingState = isAttacking;
 
 
     }

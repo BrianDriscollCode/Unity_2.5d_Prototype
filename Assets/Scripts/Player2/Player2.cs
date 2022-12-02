@@ -55,16 +55,18 @@ public class Player2 : MonoBehaviour
     public AnimationPlayer2 AnimationPlayer;
     public InventoryPlayer2 Inventory;
     public Raycast2 Raycast;
+    public EquipmentManager EquipmentManager;
 
-    //State { FirstState, SecondState }
-    public PlayerState PlayerState = new PlayerState();
-    public string[] TempPlayerState = { "Idle", null, null };
+    //State { InitialState, AdditionalState, AttackingState }
+    public PlayerDataPackages.PlayerState PlayerState; //Refer to namespace for "PlayerDataPackages" (This file up top)
+    public string[] TempPlayerState;
+
     //Player Variables
-    public string PlayerDirection = "Right";
-    public bool HasJumped = false;
-    public bool IsGrounded = false;
-    //Current Input
-    public string? PlayerCurrentInput = null;
+    public string PlayerDirection;
+    public bool HasJumped;
+    public bool IsGrounded;
+    public string PlayerCurrentInput;
+    public string CurrentWeapon;
 
     private void Awake()
     {
@@ -73,66 +75,138 @@ public class Player2 : MonoBehaviour
         AnimationPlayer = GetComponent<AnimationPlayer2>();
         Inventory = GetComponent<InventoryPlayer2>();
         Raycast = GetComponent<Raycast2>();
+        EquipmentManager = GetComponent<EquipmentManager>();
+
     }
     void Start()
     {
+        //Starting conditions
+        PlayerState = new PlayerState();
+        PlayerDirection = "Right";
+
+        //Starting up the state machine 
+        string[] TempPlayerState = { "Idle", null, null };
         PlayerState.SetState(TempPlayerState[0], TempPlayerState[1], TempPlayerState[2]);
-        //AnimationPlayer.SetAnimationState("Idle", null, "Right", false);
+        HasJumped = false;
+        IsGrounded = false;
+        PlayerCurrentInput = null;
     }
 
     private void Update()
     {
         //Get Input
         PlayerCurrentInput = TrackUserInput();
-        PassToStateMachine DirectInput = new PassToStateMachine();
+
+        //Pass Input to StateMachine "StateMachinePlayer2"
+        PlayerDataPackages.PassToStateMachine DirectInput = new PlayerDataPackages.PassToStateMachine();
+        //@params type, input - Refer to namespace PlayerDataPackages for more information (top of this file)
         DirectInput.Insert("UserInput", PlayerCurrentInput);
-        
-        //Fetch State From Input
         TempPlayerState = StateMachine.CheckState(DirectInput);
-        
+
         //Set Player2 Script State (this script)
         PlayerState.SetState(TempPlayerState[0], TempPlayerState[1], TempPlayerState[2]);
-        //Debug.Log(PlayerState.InitialState + " " + PlayerState.AdditionalState + " -Current player state");
 
-        //Inventory management here???
+        //EquipmentManager.HandleWeaponPosition(
+        //    "Pistol", 
+        //    PlayerState.InitialState, 
+        //    PlayerState.AdditionalState, 
+        //    PlayerState.AttackingState,
+        //    HasJumped, 
+        //    "Knife"
+        //);
 
-        //Handle communicating with animation player
+        //Checking if player is grounded to refine jump state before passing all the player states to ***animation player***
         if (Raycast.IsGrounded())
         {
             HasJumped = false;
         }
-        AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped, PlayerState.AttackingState);
-        //Debug.Log("******************" + PlayerState.AdditionalState);
 
-        //Debug.Log("Camera here: " + Camera.transform );
+
+        if (Input.GetKey("space"))
+        {
+            AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped, "isAttacking");
+        }
+        else if (Input.GetKey("q"))
+        {
+            AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped, "isNeutral");
+        }
+        else
+        {
+            AnimationPlayer.SetAnimationState(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped, PlayerState.AttackingState);
+        }
     }
     void FixedUpdate()
     {
-
-        //Debug.Log(HasJumped + " -HasJumped************");
-        if (Raycast.IsGrounded())
-        {
-            HasJumped = false;
-        }
-
-        //Finish Writing the direction logic
+       
+        //Fix after Animation Player
         Movement.MovePlayer(PlayerState.InitialState, PlayerState.AdditionalState, PlayerDirection, HasJumped);
 
-        //Debug.Log(HasJumped + " -HasJumped equals");
-
-        
     }
 
-   
-    private string TrackUserInput() 
+    //Summary function TrackUserInput
+    // Filters the user's input into a specific string. All UserInput that
+    // results in an action has been sanitized here before getting passed
+    // to the state machine. 
+    private string TrackUserInput()
     {
         string? UserInput;
 
-        //Priority for two types of character stances: 
-        //(1) Jumping - "w" && "a" or "d"
-        //(2) Crouching - "s" && "a" or "d"
-        //Otherwise "Standing" is default
-        //This is all ONLY Input, but structured for further down the line
+        //****** Equipment Buttons ********//
+        //**NOTE: (1) Handles here so equipping and unequip take precedence
+        //        WITHOUT stopping movement
+        //        (2) Keep in mind, tons of explicit input will need to be defined
+        //            to make sure movement WITH equips work. But maybe it just works 
+        //            without all that extra work. We will see.
+
+        if (Input.GetKey("1")) 
+        {
+            CurrentWeapon = "Pistol";
+        }
+
+        //****** Attacking Stance Buttons *******//
+
+        //Right
+        if (Input.GetKey("space") && Input.GetKey("w") && Input.GetKey("d"))
+        {
+            UserInput = "spacewd";
+            HasJumped = true;
+        }
+        //Left
+        else if (Input.GetKey("space") && Input.GetKey("w") && Input.GetKey("a"))
+        {
+            UserInput = "spacewa";
+            HasJumped = true;
+        }
+        //Right
+        else if (Input.GetKey("space") && Input.GetKey("s") && Input.GetKey("d"))
+        {
+            UserInput = "spacesd";
+        }
+        //Left
+        else if (Input.GetKey("space") && Input.GetKey("s") && Input.GetKey("a"))
+        {
+            UserInput = "spacesd";
+        }
+        else if (Input.GetKey("space") && Input.GetKey("w"))
+        {
+            UserInput = "spacew";
+            HasJumped = true;
+        }
+        else if (Input.GetKey("space") && Input.GetKey("s"))
+        {
+            UserInput = "spaces";
+
+        }
+        else if (Input.GetKey("space") && Input.GetKey("d"))
+        {
+            UserInput = "spaced";
+        }
+        else if (Input.GetKey("space") && Input.GetKey("a"))
+        {
+            UserInput = "spacea";
+        }
+
+        //****** Running Stance Buttons *******//
 
         //**Double Buttons
         //
@@ -145,8 +219,6 @@ public class Player2 : MonoBehaviour
             PlayerDirection = "Right";
             HasJumped = true;
 
-            //Debug.Log(UserInput + " was pressed");
-
             return UserInput;
         }
 
@@ -156,8 +228,6 @@ public class Player2 : MonoBehaviour
             UserInput = "wa";
             PlayerDirection = "Left";
             HasJumped = true;
-
-            //Debug.Log(UserInput + " was pressed");
 
             return UserInput;
         }
@@ -170,8 +240,6 @@ public class Player2 : MonoBehaviour
             UserInput = "sd";
             PlayerDirection = "Right";
 
-            //Debug.Log(UserInput + " was pressed");
-
             return UserInput;
         }
 
@@ -180,8 +248,6 @@ public class Player2 : MonoBehaviour
         {
             UserInput = "sa";
             PlayerDirection = "Left";
-
-            //Debug.Log(UserInput + " was pressed");
 
             return UserInput;
         }
@@ -220,8 +286,6 @@ public class Player2 : MonoBehaviour
         {
             UserInput = null;
         }
-
-        //Debug.Log(UserInput + " was pressed");
 
         return UserInput;
     }
